@@ -4,10 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -30,9 +28,8 @@ import fpt.edu.fumic.repository.UserRepository;
 import fpt.edu.fumic.utils.DateConverterStrDate;
 import fpt.edu.fumic.utils.LoadingDialog;
 import fpt.edu.fumic.utils.MyToast;
-/*
- * luong_123
- */
+import fpt.edu.fumic.utils.UserInformation;
+
 public class EditProfileActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String ACTION_REGISTER = "action register", STATUS_REGISTER = "status register", STATUS_REGISTER_SUCCESS = "register successful", STATUS_REGISTER_FAILED = "register failed", STATUS_REGISTER_ERROR = "register error", EMPTY_FIELD_WARNING = "This field can not empty!";
     private TextInputLayout tilFullname, tilEmail, tilPhone, tilDoB;
@@ -55,14 +52,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
 
         //Init user repository
         userRepository = new UserRepository(this);
-
-        //get user
-        String uid = getIntent().getStringExtra("uid");
-        if (uid == null || uid.isEmpty()) {
-            return;
-        }
-
-        userEntity = userRepository.getUserById(uid);
+        userEntity = UserInformation.getInstance().getUser();
         if (userEntity == null) {
             return;
         }
@@ -188,6 +178,7 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
             userEntity.setGender(gender);
             userEntity.setPhone(phone);
             userRepository.updateUser(userEntity);
+            UserInformation.getInstance().setUser(userEntity);
             loadingDialog.stopLoadingDialog();
             MyToast.successfulToast(EditProfileActivity.this, "Successfully updated!");
             Intent intent = new Intent();
@@ -197,10 +188,10 @@ public class EditProfileActivity extends AppCompatActivity implements View.OnCli
     }
 
     private boolean isEmail(String email) {
-//        if (!email.matches(User.MATCHES_EMAIL)) {
-//            tilEmail.setError("Wrong email format!");
-//            return false;
-//        }
+        if (!email.matches(UserEntity.MATCHES_EMAIL)) {
+            tilEmail.setError("Wrong email format!");
+            return false;
+        }
         return true;
     }
 

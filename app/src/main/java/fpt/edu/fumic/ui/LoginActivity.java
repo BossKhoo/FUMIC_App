@@ -24,6 +24,7 @@ import fpt.edu.fumic.database.entity.UserEntity;
 import fpt.edu.fumic.repository.UserRepository;
 import fpt.edu.fumic.utils.LoadingDialog;
 import fpt.edu.fumic.utils.MyToast;
+import fpt.edu.fumic.utils.UserInformation;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String ACTION_LOGIN = "action login"
@@ -87,7 +88,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         intentFilter = new IntentFilter();
         intentFilter.addAction(ACTION_LOGIN);
     }
-    private void sendLoginStatusToBoardcast(String statusLoginStr) {
+    private void sendLoginStatusToBroadcast(String statusLoginStr) {
         Intent loginIntent = new Intent();
         loginIntent.setAction(ACTION_LOGIN);
         loginIntent.putExtra(STATUS_LOGIN, statusLoginStr);
@@ -125,7 +126,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             if(user != null){
                 if (user.getPassword().equals(password)){
                     statusLogin = STATUS_LOGIN_SUCCESS;
-                    toMainPage(username);
+                    UserInformation.getInstance().setUser(user);
+                    toMainPage();
                     if(check_box_remember.isChecked()){
                         setPreferencesMemory();
                     }else {
@@ -141,15 +143,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 statusLogin = STATUS_LOGIN_FAILED;
             }
         }
-        sendLoginStatusToBoardcast(statusLogin);
+        sendLoginStatusToBroadcast(statusLogin);
     }
     @NonNull
     private String getText(TextInputLayout textInputLayout) {
         return Objects.requireNonNull(textInputLayout.getEditText()).getText().toString().trim();
     }
-    private void toMainPage(String username){
+    private void toMainPage(){
         Intent intentMainPage = new Intent(LoginActivity.this, MainActivity.class);
-        intentMainPage.putExtra(KEY_USER, username);
         startActivity(intentMainPage);
         finish();
     }

@@ -25,8 +25,11 @@ import fpt.edu.fumic.ui.BrowseBookActivity;
 import fpt.edu.fumic.ui.ChangePasswordActivity;
 import fpt.edu.fumic.ui.FavouriteActivity;
 import fpt.edu.fumic.ui.HistoriesActivity;
+import fpt.edu.fumic.ui.LoginActivity;
 import fpt.edu.fumic.ui.UserDetailActivity;
 import fpt.edu.fumic.ui.UserProfileActivity;
+import fpt.edu.fumic.utils.MyToast;
+import fpt.edu.fumic.utils.UserInformation;
 
 
 public class ProfileFragment extends Fragment implements View.OnClickListener {
@@ -35,8 +38,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         return new ProfileFragment();
     }
 
-    private View viewInformation, viewChangePassword, viewBrowseBooks, viewHistories, viewFavourite;
-
+    private View viewInformation, viewChangePassword, viewBrowseBooks, viewHistories, viewFavourite, viewLogout;
     private UserRepository userRepository;
     private UserEntity userEntity;
 
@@ -45,44 +47,26 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        return inflater.inflate(R.layout.activity_user_profile, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         initActivity(view);
-
-
         userRepository = new UserRepository(requireActivity());
-        loadUser();
+        loadView();
         viewInformation.setOnClickListener(this);
         viewChangePassword.setOnClickListener(this);
         viewBrowseBooks.setOnClickListener(this);
         viewHistories.setOnClickListener(this);
         viewFavourite.setOnClickListener(this);
-
-
-
+        viewLogout.setOnClickListener(this);
     }
 
     private void loadUser() {
-
-
-
-
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("login_info", Context.MODE_PRIVATE);
-        String username = sharedPreferences.getString("username", null);
-        if (username != null) {
-            userEntity = userRepository.getUserById(username);
-            if (userEntity == null) {
-                return;
-            }
-            loadView();
-        }
-
-
+        userEntity = UserInformation.getInstance().getUser();
+        loadView();
     }
 
     ActivityResultLauncher<Intent> mStartForStoryResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
@@ -92,8 +76,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 }
             });
 
-
     private void loadView() {
+        userEntity = UserInformation.getInstance().getUser();
+        if (userEntity == null){
+            return;
+        }
         tvName.setText(userEntity.getName());
         tvEmail.setText(userEntity.getEmail());
 
@@ -112,27 +99,34 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         viewBrowseBooks = view.findViewById(R.id.viewBrowseBooks);
         viewHistories = view.findViewById(R.id.viewHistories);
         viewFavourite = view.findViewById(R.id.viewFavourite);
+        viewLogout = view.findViewById(R.id.viewLogout);
         tvName = view.findViewById(R.id.tvName);
         tvEmail = view.findViewById(R.id.tvEmail);
-
     }
-
+    private void logout(){
+        Intent intent = new Intent(requireActivity(), LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        UserInformation.getInstance().setUser(null);
+        startActivity(intent);
+        requireActivity().finish();
+    }
     @Override
     public void onClick(View view) {
-       if (view.getId() == R.id.viewInformation) {
+        if (view.getId() == R.id.viewInformation) {
             Intent intent = new Intent(requireActivity(), UserDetailActivity.class);
-            intent.putExtra("uid", userEntity.getId());
             mStartForStoryResult.launch(intent);
         } else if (view.getId() == R.id.viewChangePassword) {
             Intent intent = new Intent(requireActivity(), ChangePasswordActivity.class);
-            intent.putExtra("uid", userEntity.getId());
             mStartForStoryResult.launch(intent);
         } else if (view.getId() == R.id.viewBrowseBooks) {
             startActivity(new Intent(requireActivity(), BrowseBookActivity.class));
         } else if (view.getId() == R.id.viewFavourite) {
-            startActivity(new Intent(requireActivity(), FavouriteActivity.class));
+           startActivity(new Intent(requireActivity(), FavouriteActivity.class));
         } else if (view.getId() == R.id.viewHistories) {
-            startActivity(new Intent(requireActivity(), HistoriesActivity.class));
+            MyToast.confusingToast(getContext(), "This function is coming soon!");
+//            startActivity(new Intent(requireActivity(), HistoriesActivity.class));
+        } else if (view.getId() == R.id.viewLogout) {
+            logout();
         }
     }
 }

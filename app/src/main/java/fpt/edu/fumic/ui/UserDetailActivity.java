@@ -3,6 +3,7 @@ package fpt.edu.fumic.ui;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -11,17 +12,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import fpt.edu.fumic.R;
 import fpt.edu.fumic.database.entity.UserEntity;
+import fpt.edu.fumic.database.model.User;
 import fpt.edu.fumic.repository.UserRepository;
 import fpt.edu.fumic.utils.DateConverterStrDate;
-/*
- * luong_123
- */
+import fpt.edu.fumic.utils.UserInformation;
+
 public class UserDetailActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageView ivBack;
-    private UserRepository userRepository;
     private UserEntity userEntity;
     private boolean isChange;
     private TextView tvNameTitle, tvName, tvEmail, tvDob, tvPhone, tvRole, tvGender, viewInformation;
@@ -31,9 +32,31 @@ public class UserDetailActivity extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_detail);
         initActivity();
-        userRepository = new UserRepository(this);
-        loadUser();
-
+        Intent intent = getIntent();
+        isChange = false;
+        if (intent != null) {
+            if (intent.hasExtra("userEntity")) {
+                userEntity = (UserEntity) intent.getSerializableExtra("userEntity");
+                if (userEntity != null) {
+                    loadView();
+                } else {
+                    Toast.makeText(this, "Error: User not found or not authorized", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            } else {
+                // If no specific user is passed, load the current user
+                userEntity = UserInformation.getInstance().getUser();
+                if (userEntity != null) {
+                    loadView();
+                } else {
+                    Toast.makeText(this, "Error: Current user not found", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+        } else {
+            Toast.makeText(this, "Intent is null", Toast.LENGTH_SHORT).show();
+            finish();
+        }
         ivBack.setOnClickListener(this);
         viewInformation.setOnClickListener(this);
 
@@ -48,14 +71,7 @@ public class UserDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void loadUser() {
-        String uid = getIntent().getStringExtra("uid");
-        if (uid == null || uid.isEmpty()) {
-            return;
-        }
-        userEntity = userRepository.getUserById(uid);
-        if (userEntity == null) {
-            return;
-        }
+        userEntity = UserInformation.getInstance().getUser();
         loadView();
     }
 
@@ -110,10 +126,7 @@ public class UserDetailActivity extends AppCompatActivity implements View.OnClic
         tvRole = findViewById(R.id.tvRole);
         tvGender = findViewById(R.id.tvGender);
         viewInformation = findViewById(R.id.viewInformation);
-
     }
-
-
     ActivityResultLauncher<Intent> mStartForStoryResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
@@ -128,13 +141,13 @@ public class UserDetailActivity extends AppCompatActivity implements View.OnClic
             handleFinish();
         } else if (view.getId() == R.id.viewInformation) {
             Intent intent = new Intent(UserDetailActivity.this, EditProfileActivity.class);
-            intent.putExtra("uid", userEntity.getId());
             mStartForStoryResult.launch(intent);
         }
     }
 
     private void handleFinish() {
         if (isChange) {
+            isChange = false;
             Intent intent = new Intent();
             setResult(android.app.Activity.RESULT_OK, intent);
         }

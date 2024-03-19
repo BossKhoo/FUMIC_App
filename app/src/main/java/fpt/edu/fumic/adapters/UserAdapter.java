@@ -3,25 +3,19 @@ package fpt.edu.fumic.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
-
 import fpt.edu.fumic.R;
 import fpt.edu.fumic.database.entity.UserEntity;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
-    /*
-    Date : 5/3/2024
-    */
 
     private List<UserEntity> userList;
     private OnUserClickListener onUserClickListener;
 
+    // Constructor to set the click listener
     public UserAdapter(OnUserClickListener onUserClickListener) {
         this.onUserClickListener = onUserClickListener;
     }
@@ -29,12 +23,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     // Method to set user list to the adapter
     public void setUserList(List<UserEntity> userList) {
         this.userList = userList;
-        notifyDataSetChanged();
-    }
-
-    // Method to remove a user from the list
-    public void removeUser(UserEntity user) {
-        userList.remove(user);
         notifyDataSetChanged();
     }
 
@@ -49,11 +37,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         UserEntity user = userList.get(position);
         holder.txtUserName.setText(user.getName());
+        holder.txtID.setText(String.valueOf(user.getId()));
 
-        // Set click listener for delete icon
-        holder.imgDelete.setOnClickListener(v -> {
-            if (onUserClickListener != null) {
-                onUserClickListener.onUserClick(user);
+        // Set click listener for user item
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onUserClickListener != null) {
+                    onUserClickListener.onUserClick(user);
+                }
             }
         });
     }
@@ -65,19 +57,17 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     // Define your UserViewHolder class here
     public static class UserViewHolder extends RecyclerView.ViewHolder {
-        TextView txtUserName;
-        ImageView imgDelete;
+        TextView txtUserName, txtID;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             txtUserName = itemView.findViewById(R.id.txt_user_name);
-            imgDelete = itemView.findViewById(R.id.img_delete);
+            txtID = itemView.findViewById(R.id.txt_user_id);
         }
     }
 
-    // Interface to handle user click events
+    // Interface to handle click events on user items
     public interface OnUserClickListener {
         void onUserClick(UserEntity user);
     }
 }
-

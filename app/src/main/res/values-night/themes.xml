@@ -2,19 +2,19 @@
     <!-- Base application theme. -->
     <style name="Theme.FUMIC" parent="Theme.AppCompat.DayNight">
         <!-- Original AppCompat attributes. -->
-        <item name="colorPrimary">@color/Purple</item>
-        <item name="colorSecondary">@color/Teal</item>
-        <item name="android:colorBackground">@color/Black</item>
+        <item name="colorPrimary">@color/DarkOrange</item>
+        <item name="colorSecondary">@color/Cyan</item>
+        <item name="android:colorBackground">@color/White</item>
         <item name="colorError">@color/FireBrick</item>
         <!-- New MaterialComponents attributes. -->
-        <item name="colorPrimaryVariant">@color/MediumPurple</item>
+        <item name="colorPrimaryVariant">@color/Chocolate</item>
         <item name="colorSecondaryVariant">@color/DarkCyan</item>
-        <item name="colorSurface">@color/Transparent1</item>
+        <item name="colorSurface">@color/Snow</item>
         <item name="colorOnPrimary">@color/White</item>
         <item name="colorOnSecondary">@color/Black</item>
-        <item name="colorOnBackground">@color/White</item>
+        <item name="colorOnBackground">@color/Black</item>
         <item name="colorOnError">@color/White</item>
-        <item name="colorOnSurface">@color/White</item>
+        <item name="colorOnSurface">@color/Black</item>
         <item name="scrimBackground">@color/mtrl_scrim_color</item>
         <item name="textAppearanceHeadline1">@style/TextAppearance.MaterialComponents.Headline1</item>
         <item name="textAppearanceHeadline2">@style/TextAppearance.MaterialComponents.Headline2</item>
@@ -29,6 +29,7 @@
         <item name="textAppearanceCaption">@style/TextAppearance.MaterialComponents.Caption</item>
         <item name="textAppearanceButton">@style/TextAppearance.MaterialComponents.Button</item>
         <item name="textAppearanceOverline">@style/TextAppearance.MaterialComponents.Overline</item>
+
 
     </style>
 </resources>

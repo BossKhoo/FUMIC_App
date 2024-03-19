@@ -45,10 +45,8 @@ public class HomepageFragment extends Fragment {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String dateString = "2024-02-29";
 
-
         bookList = bookRepository.getBookListAvailable(1, 9, 0);
         GridLayoutManager manager = new GridLayoutManager(getContext(), 3);
-
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(bookAdapter);
 
@@ -60,6 +58,5 @@ public class HomepageFragment extends Fragment {
                 getActivity().startActivity(intent);
             }
         });
-
     }
 }
